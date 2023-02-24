@@ -1,4 +1,11 @@
 #include <SoftwareSerial.h>
+const int BTN  = A0; 
+
+//Btn poussoir
+int btnVal  = 0; 
+bool btnState  = false; 
+bool oldbtnState  = false; 
+ 
 
 SoftwareSerial mySerial(10, 11);  // TX, RX
 const byte PIN_LED_R = 6;
@@ -26,6 +33,7 @@ void setup() {
   displayColor(rgbCalme);
   Serial.println("Enter AT commands:");
   mySerial.begin(57600);
+  pinMode(BTN,INPUT_PULLUP); 
 }
 
 void loop() {
@@ -50,6 +58,8 @@ void loop() {
   if (Serial.available()) {
     mySerial.write(Serial.read());
   }
+
+  testPushBtn();
 }
 
 
@@ -61,6 +71,23 @@ void writeString(String stringData) {  // Used to serially push out a String wit
   }
 }
 
+void testPushBtn( ) { /* function testPushBtn */
+  ////Read pushbutton
+  btnVal = analogRead(BTN);
+  if (btnVal < 200) {
+    btnState = true;
+  } else {
+    btnState = false;
+  }
+  
+  if (oldbtnState != btnState) {
+    if(btnState==true){
+        writeString("ptc_alerte_V_upgrade");
+    }
+  }
+
+  oldbtnState = btnState;
+}
 
 void updateAlerteState(String alerteMessage) {
 
